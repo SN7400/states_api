@@ -49,10 +49,10 @@ const deleteState = async (req, res) => {
 }
 
 const getState = async (req, res) => {
-    if (!req?.params?.id) return res.status(400).json({'message': 'State ID required.'})
-    const state = await State.findOne({ _id: req.params.id }).exec();
+    if (!req?.params?.state) return res.status(400).json({'message': `State provided was ${req.params.state}`})
+    const state = await State.findOne({ stateCode: req.params.state }).exec();
     if (!state) {
-        return res.status(204).json({ "message": `No state matches ID ${req.params.id}.` });
+        return res.status(204).json({ "message": "Invalid state abbreviation parameter" });
     }
     res.json(state);
 }
