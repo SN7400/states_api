@@ -8,7 +8,7 @@ const getAllStates = async (req, res) => {
 
 const getState = async (req, res) => {
     const state = await State.findOne({ stateCode: req.params.state }).exec();
-    res.json(state);
+    return res.status(200).json(state);
 }
 
 const createFunFact = async (req, res) => {
@@ -21,12 +21,12 @@ const createFunFact = async (req, res) => {
     }
 
     try {
-        const result = await State.updateOne(
+        await State.updateOne(
             { stateCode: req.params.state },
             { $push: { funFacts: req.body.funfacts } }
         );
-
-        res.status(201).json(result);
+        const state = await State.findOne({ stateCode: req.params.state }).exec();
+        return res.status(201).json(state);
     } catch (err) {
         console.error(err);
     }
