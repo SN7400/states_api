@@ -7,9 +7,9 @@ const getAllStates = async (req, res) => {
 }
 
 const createNewState = async (req, res) => {
-    if (!req?.body?.firstname || !req?.body?.lastname) {
-        return res.status(400).json({ 'message': 'First and last names are required'})
-    }
+    //if (!req?.body?.firstname || !req?.body?.lastname) {
+    //    return res.status(400).json({ 'message': 'First and last names are required'})
+    //}
 
     try {
         const result = await State.create({
@@ -50,9 +50,6 @@ const deleteState = async (req, res) => {
 
 const getState = async (req, res) => {
     const state = await State.findOne({ stateCode: req.params.state }).exec();
-    if (!state) {
-        return res.status(204).json({ "message": "Invalid state abbreviation parameter" });
-    }
     res.json(state);
 }
 

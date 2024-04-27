@@ -28,7 +28,6 @@ app.use(express.json());
 // routes
 app.use('/', require('./routes/root'));
 app.use('/states', require('./routes/api/states'));
-//app.use('/states/:state', verifyState);
 
 app.all('*', (req, res) => {
     res.status(404);

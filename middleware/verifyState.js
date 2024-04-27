@@ -42,16 +42,13 @@ const verifyState = (req, res, next) => {
         if (err) throw err;
         const statesData = JSON.parse(data);
         const stateCodes = statesData.map((state) => state.code);
-        console.log(stateCodes);
-        console.log(stateUpper);
         if (!stateCodes.find((element) => element === stateUpper)) {
             return res.status(400).json({'message': 'Invalid state abbreviation parameter'});
         } else {
-            req.code = stateUpper;
-            //require('../routes/api/states');
+            req.params.state = stateUpper;
+            next();
         }
     });
-    next();
 }
 
 module.exports = verifyState;

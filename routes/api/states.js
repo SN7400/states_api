@@ -4,13 +4,10 @@ const statesController = require('../../controllers/statesController');
 const verifyState = require('../../middleware/verifyState');
 
 router.route('/')
-    .get(statesController.getAllStates)
-    //.post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), employeesController.createNewEmployee)
-    //.put(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), employeesController.updateEmployee)
-    //.delete(verifyRoles(ROLES_LIST.Admin), employeesController.deleteEmployee);
+    .get(statesController.getAllStates);
 
-//app.use(verifyState);
 router.route('/:state')
-    .get(verifyState, statesController.getState);
+    .get(verifyState, statesController.getState)
+    .post(verifyState, statesController.createNewState);
 
 module.exports = router;
