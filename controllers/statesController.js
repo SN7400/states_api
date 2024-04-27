@@ -6,16 +6,25 @@ const getAllStates = async (req, res) => {
     res.json(states);
 }
 
-const createNewState = async (req, res) => {
-    //if (!req?.body?.firstname || !req?.body?.lastname) {
-    //    return res.status(400).json({ 'message': 'First and last names are required'})
-    //}
+const getState = async (req, res) => {
+    const state = await State.findOne({ stateCode: req.params.state }).exec();
+    res.json(state);
+}
+
+const createFunFact = async (req, res) => {
+    if (!req?.body?.funfacts) {
+        return res.status(400).json({ 'message': 'State fun facts value required'});
+    }
+
+    if (!Array.isArray(req.body.funfacts)) {
+        return res.status(400).json({ 'message': 'State fun facts value must be an array'});
+    }
 
     try {
-        const result = await State.create({
-            firstname: req.body.firstname,
-            lastname: req.body.lastname
-        });
+        const result = await State.updateOne(
+            { stateCode: req.params.state },
+            { $push: { funFacts: req.body.funfacts } }
+        );
 
         res.status(201).json(result);
     } catch (err) {
@@ -23,7 +32,7 @@ const createNewState = async (req, res) => {
     }
 }
 
-const updateState = async (req, res) => {
+const updateFunFact = async (req, res) => {
     if (!req?.body?.id) {
         return res.status(400).json({ 'message': 'ID paramater is required'});
     }
@@ -38,7 +47,7 @@ const updateState = async (req, res) => {
     res.json(result);
 }
 
-const deleteState = async (req, res) => {
+const deleteFunFact = async (req, res) => {
     if (!req?.body?.id) return res.status(400).json({'message': 'State ID required.'})
     const state = await State.findOne({ _id: req.body.id }).exec();
     if (!state) {
@@ -48,15 +57,12 @@ const deleteState = async (req, res) => {
     res.json(result);
 }
 
-const getState = async (req, res) => {
-    const state = await State.findOne({ stateCode: req.params.state }).exec();
-    res.json(state);
-}
+
 
 module.exports = {
     getAllStates,
-    createNewState,
-    updateState,
-    deleteState,
+    createFunFact,
+    updateFunFact,
+    deleteFunFact,
     getState
 }

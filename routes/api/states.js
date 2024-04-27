@@ -7,7 +7,9 @@ router.route('/')
     .get(statesController.getAllStates);
 
 router.route('/:state')
-    .get(verifyState, statesController.getState)
-    .post(verifyState, statesController.createNewState);
+    .get(verifyState, statesController.getState);
+
+router.route('/:state/funfacts')
+    .post(verifyState, statesController.createFunFact);
 
 module.exports = router;
