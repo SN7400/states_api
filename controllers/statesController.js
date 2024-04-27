@@ -49,7 +49,6 @@ const deleteState = async (req, res) => {
 }
 
 const getState = async (req, res) => {
-    if (!req?.params?.state) return res.status(400).json({'message': `State provided was ${req.params.state}`})
     const state = await State.findOne({ stateCode: req.params.state }).exec();
     if (!state) {
         return res.status(204).json({ "message": "Invalid state abbreviation parameter" });
