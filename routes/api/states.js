@@ -9,8 +9,9 @@ router.route('/')
 router.route('/:state')
     .get(verifyState, statesController.getState);
 
-router.route('/:state/funfacts')
+router.route('/:state/funfact')
     .post(verifyState, statesController.createFunFact)
-    .patch(verifyState, statesController.updateFunFact);
+    .patch(verifyState, statesController.updateFunFact)
+    .delete(verifyState, statesController.deleteFunFact);
 
 module.exports = router;

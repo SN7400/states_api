@@ -63,10 +63,11 @@ const deleteFunFact = async (req, res) => {
     } 
     try {
         const trueIndex = req.body.index - 1;
-        console.log(await State.findOne({ stateCode: req.params.state }).funFacts)
+        const stateObject = await State.findOne({ stateCode: req.params.state });
+        const elementToPull = stateObject.funFacts[trueIndex];
         await State.updateOne(
             { stateCode: req.params.state },
-            { $pull: {  } }
+            { $pull: { "funFacts": elementToPull } }
         );
         const state = await State.findOne({ stateCode: req.params.state }).exec();
         return res.status(201).json(state);
