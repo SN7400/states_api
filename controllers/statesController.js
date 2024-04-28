@@ -33,29 +33,40 @@ const createFunFact = async (req, res) => {
 }
 
 const updateFunFact = async (req, res) => {
-    if (!req?.body?.id) {
-        return res.status(400).json({ 'message': 'ID paramater is required'});
+    if (!req?.body?.index || req.body.index < 1) {
+        return res.status(400).json({ 'message': 'State fun fact index value required'});
+    }
+    if (!req?.body?.funfact) {
+        return res.status(400).json({ 'message': 'State fun fact value required'});
     }
 
-    const state = await State.findOne({ _id: req.body.id }).exec();
-    if (!state) {
-        return res.status(204).json({ "message": `No state matches ID ${req.body.id}.` });
+    //if (!Array.isArray(req.body.funfacts)) {
+    //    return res.status(400).json({ 'message': 'State fun facts value must be an array'});
+    //}
+
+    try {
+        await State.updateOne(
+            { stateCode: req.params.state },
+            { $set: { "funFacts.$[index -1]": req.body.funfact } }
+        );
+        const state = await State.findOne({ stateCode: req.params.state }).exec();
+        return res.status(201).json(state);
+    } catch (err) {
+        console.error(err);
     }
-    if (req.body?.firstname) state.firstname = req.body.firstname;
-    if (req.body?.lastname) state.lastname = req.body.lastname;
-    const result = await state.save();
-    res.json(result);
 }
 
-const deleteFunFact = async (req, res) => {
-    if (!req?.body?.id) return res.status(400).json({'message': 'State ID required.'})
+/*const deleteFunFact = async (req, res) => {
+    if (!req?.body?indx) {
+        return res.status(400).json({'message': 'State fun fact index value required'})
+    } 
     const state = await State.findOne({ _id: req.body.id }).exec();
     if (!state) {
         return res.status(204).json({ "message": `No state matches ID ${req.body.id}.` });
     }
     const result = await state.deleteOne({ _id: req.body.id });
     res.json(result);
-}
+}*/
 
 
 
@@ -63,6 +74,6 @@ module.exports = {
     getAllStates,
     createFunFact,
     updateFunFact,
-    deleteFunFact,
+    //deleteFunFact,
     getState
 }
