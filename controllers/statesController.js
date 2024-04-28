@@ -40,12 +40,13 @@ const updateFunFact = async (req, res) => {
         return res.status(400).json({ 'message': 'State fun fact value required'});
     }
 
-    //if (!Array.isArray(req.body.funfacts)) {
-    //    return res.status(400).json({ 'message': 'State fun facts value must be an array'});
-    //}
+    const trueIndex = req.body.index - 1;
+    const stateObject = await State.findOne({ stateCode: req.params.state });
+    if (!stateObject.funFacts[trueIndex]) {
+        return res.status(404).json({ 'message': 'No Fun Fact found at that index for STATE'});
+    }
 
     try {
-        const trueIndex = req.body.index - 1;
         await State.updateOne(
             { stateCode: req.params.state },
             { $set: { [`funFacts.${trueIndex}`]: req.body.funfact } }
@@ -61,13 +62,17 @@ const deleteFunFact = async (req, res) => {
     if (!req?.body?.index || req.body.index < 1) {
         return res.status(400).json({'message': 'State fun fact index value required'});
     } 
+
+    const trueIndex = req.body.index - 1;
+    const stateObject = await State.findOne({ stateCode: req.params.state });
+    if (!stateObject.funFacts[trueIndex]) {
+        return res.status(404).json({ 'message': 'No Fun Fact found at that index for STATE'});
+    }
+
     try {
-        const trueIndex = req.body.index - 1;
-        const stateObject = await State.findOne({ stateCode: req.params.state });
-        const elementToPull = stateObject.funFacts[trueIndex];
         await State.updateOne(
             { stateCode: req.params.state },
-            { $pull: { "funFacts": elementToPull } }
+            { $pull: { "funFacts": stateObject.funFacts[trueIndex] } }
         );
         const state = await State.findOne({ stateCode: req.params.state }).exec();
         return res.status(201).json(state);
