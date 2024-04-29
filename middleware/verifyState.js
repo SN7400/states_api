@@ -34,21 +34,19 @@ If it is in the array, you will want to set the value on the request req.code = 
 Call next() to move from the middleware to what is next.
 */
 
-const fs = require('fs');
+const fsPromises = require('fs').promises;
 
-const verifyState = (req, res, next) => {
+const verifyState = async (req, res, next) => {
     const stateUpper = req.params.state.toUpperCase();
-    fs.readFile('./model/statesData.json', 'utf8', (err, data) => {
-        if (err) throw err;
-        const statesData = JSON.parse(data);
-        const stateCodes = statesData.map((state) => state.code);
-        if (!stateCodes.find((element) => element === stateUpper)) {
-            return res.status(400).json({'message': 'Invalid state abbreviation parameter'});
-        } else {
-            req.params.state = stateUpper;
-            next();
-        }
-    });
+    data = await fsPromises.readFile('./model/statesData.json', { encoding: 'utf8' });
+    const statesData = JSON.parse(data);
+    const stateCodes = statesData.map((state) => state.code);
+    if (!stateCodes.find((element) => element === stateUpper)) {
+        return res.status(400).json({'message': 'Invalid state abbreviation parameter'});
+    } else {
+        req.params.state = stateUpper;
+        next();
+    }
 }
 
 module.exports = verifyState;

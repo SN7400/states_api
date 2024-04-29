@@ -1,13 +1,22 @@
 const State = require('../model/State');
+const fsPromises = require('fs').promises;
 
 const getAllStates = async (req, res) => {
-    const states = await State.find();
-    if (!states) return res.status(204).json({ 'message': 'No states found.' });
-    res.json(states);
+    const data = await fsPromises.readFile('./model/statesData.json', { encoding: 'utf8' });
+    const states = JSON.parse(data);
+    const statesFromDb = await State.find();
+    for (let state of states) {
+        const stateFromDb = statesFromDb.find((element) => element.stateCode === state.code);
+        state.funFacts = stateFromDb['funFacts'];
+    }
+    return res.status(200).json(states);
 }
 
 const getState = async (req, res) => {
-    const state = await State.findOne({ stateCode: req.params.state }).exec();
+    const data = await fsPromises.readFile('./model/statesData.json', { encoding: 'utf8' });
+    const state = JSON.parse(data).find((element) => element.code === req.params.state);
+    const stateFromDb = await State.findOne({ stateCode: req.params.state }).exec();
+    state.funfacts = stateFromDb['funFacts'];
     return res.status(200).json(state);
 }
 
@@ -23,7 +32,7 @@ const createFunFact = async (req, res) => {
     try {
         await State.updateOne(
             { stateCode: req.params.state },
-            { $push: { funFacts: req.body.funfacts } }
+            { $addToSet: { funFacts: req.body.funfacts } }
         );
         const state = await State.findOne({ stateCode: req.params.state }).exec();
         return res.status(201).json(state);
