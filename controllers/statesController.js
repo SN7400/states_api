@@ -45,7 +45,7 @@ const getFunFact = async (req, res) => {
     const stateFunFacts = stateFromDb['funFacts'];
     if (stateFunFacts.length === 0) return res.status(404).json({ 'message': `No Fun Facts found for ${state['state']}` });
     const randomIndex = Math.floor(Math.random() * stateFunFacts.length);
-    return res.status(200).json(stateFunFacts[randomIndex]);
+    return res.status(200).json({ 'funfact': `${stateFunFacts[randomIndex]}` });
 }
 
 const getStateCapital = async (req, res) => {
