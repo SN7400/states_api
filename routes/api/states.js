@@ -15,4 +15,16 @@ router.route('/:state/funfact')
     .patch(verifyState, statesController.updateFunFact)
     .delete(verifyState, statesController.deleteFunFact);
 
+router.route('/:state/capital')
+    .get(verifyState, statesController.getStateCapital);
+
+router.route('/:state/nickname')
+    .get(verifyState, statesController.getStateNickname);
+
+router.route('/:state/population')
+    .get(verifyState, statesController.getStatePopulation);
+
+router.route('/:state/admission')
+    .get(verifyState, statesController.getStateAdmissionDate);
+
 module.exports = router;
