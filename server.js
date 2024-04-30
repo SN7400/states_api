@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
 const connectDB = require('./config/dbConn');
 const PORT = process.env.PORT || 3000;
 
-console.log(PORT);
+console.log(process.env.PORT);
 
 // Connect to MongoDB
 connectDB();
@@ -19,7 +19,7 @@ connectDB();
 app.use(logger);
 
 // Cross Origin Resource Sharing
-app.use(cors(corsOptions));
+app.use(cors());
 
 // built-in middleware to handle urlencoded form data
 app.use(express.urlencoded({ extended: false }));
