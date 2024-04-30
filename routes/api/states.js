@@ -10,6 +10,7 @@ router.route('/:state')
     .get(verifyState, statesController.getState);
 
 router.route('/:state/funfact')
+    .get(verifyState, statesController.getFunFact)
     .post(verifyState, statesController.createFunFact)
     .patch(verifyState, statesController.updateFunFact)
     .delete(verifyState, statesController.deleteFunFact);

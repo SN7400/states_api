@@ -20,13 +20,21 @@ const getState = async (req, res) => {
     return res.status(200).json(state);
 }
 
+const getFunFact = async (req, res) => {
+    const stateFromDb = await State.findOne({ stateCode: req.params.state }).exec();
+    const stateFunFacts = stateFromDb['funFacts'];
+    if (stateFunFacts.length === 0) return res.status(404).json({ 'message': 'No Fun Facts found for STATE' });
+    const randomIndex = Math.floor(Math.random() * stateFunFacts.length);
+    return res.status(200).json(stateFunFacts[randomIndex]);
+}
+
 const createFunFact = async (req, res) => {
     if (!req?.body?.funfacts) {
-        return res.status(400).json({ 'message': 'State fun facts value required'});
+        return res.status(400).json({ 'message': 'State fun facts value required' });
     }
 
     if (!Array.isArray(req.body.funfacts)) {
-        return res.status(400).json({ 'message': 'State fun facts value must be an array'});
+        return res.status(400).json({ 'message': 'State fun facts value must be an array' });
     }
 
     try {
@@ -92,6 +100,7 @@ const deleteFunFact = async (req, res) => {
 
 module.exports = {
     getAllStates,
+    getFunFact,
     createFunFact,
     updateFunFact,
     deleteFunFact,
