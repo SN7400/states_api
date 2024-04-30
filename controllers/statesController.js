@@ -107,7 +107,7 @@ const updateFunFact = async (req, res) => {
     const trueIndex = req.body.index - 1;
     const stateObject = await State.findOne({ stateCode: req.params.state });
     if (!stateObject.funFacts[trueIndex]) {
-        return res.status(404).json({ 'message': `No Fun Fact found at that index for ${state['state']}`});
+        return res.status(404).json({ 'message': `No Fun Facts found for ${state['state']}`});
     }
 
     try {
@@ -131,7 +131,7 @@ const deleteFunFact = async (req, res) => {
     const trueIndex = req.body.index - 1;
     const stateObject = await State.findOne({ stateCode: req.params.state });
     if (!stateObject.funFacts[trueIndex]) {
-        return res.status(404).json({ 'message': `No Fun Fact found at that index for ${state['state']}`});
+        return res.status(404).json({ 'message': `No Fun Facts found for ${state['state']}`});
     }
 
     try {
