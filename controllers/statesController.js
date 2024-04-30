@@ -104,12 +104,14 @@ const updateFunFact = async (req, res) => {
     }
     const data = await fsPromises.readFile('./model/statesData.json', { encoding: 'utf8' });
     const state = JSON.parse(data).find((element) => element.code === req.params.state);
+    if (state.funFacts.length === 0) {
+        return res.status(404).json({ 'message': `No Fun Facts found for ${state['state']}`});
+    }
     const trueIndex = req.body.index - 1;
     const stateObject = await State.findOne({ stateCode: req.params.state });
     if (!stateObject.funFacts[trueIndex]) {
-        return res.status(404).json({ 'message': `No Fun Facts found for ${state['state']}`});
+        return res.status(404).json({ 'message': `No Fun Fact found at that index for ${state['state']}`});
     }
-
     try {
         await State.updateOne(
             { stateCode: req.params.state },
@@ -128,10 +130,13 @@ const deleteFunFact = async (req, res) => {
     } 
     const data = await fsPromises.readFile('./model/statesData.json', { encoding: 'utf8' });
     const state = JSON.parse(data).find((element) => element.code === req.params.state);
+    if (state.funFacts.length === 0) {
+        return res.status(404).json({ 'message': `No Fun Facts found for ${state['state']}`});
+    }
     const trueIndex = req.body.index - 1;
     const stateObject = await State.findOne({ stateCode: req.params.state });
     if (!stateObject.funFacts[trueIndex]) {
-        return res.status(404).json({ 'message': `No Fun Facts found for ${state['state']}`});
+        return res.status(404).json({ 'message': `No Fun Facts found at that index for ${state['state']}`});
     }
 
     try {
