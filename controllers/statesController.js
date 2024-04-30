@@ -34,7 +34,9 @@ const getState = async (req, res) => {
     const data = await fsPromises.readFile('./model/statesData.json', { encoding: 'utf8' });
     const state = JSON.parse(data).find((element) => element.code === req.params.state);
     const stateFromDb = await State.findOne({ stateCode: req.params.state }).exec();
-    state.funfacts = stateFromDb['funFacts'];
+    if (stateFromDb['funFacts'].length > 0) {
+        state.funfacts = stateFromDb['funFacts'];
+    }
     return res.status(200).json(state);
 }
 
@@ -63,7 +65,7 @@ const getStateNickname = async (req, res) => {
 const getStatePopulation = async (req, res) => {
     const data = await fsPromises.readFile('./model/statesData.json', { encoding: 'utf8' });
     const state = JSON.parse(data).find((element) => element.code === req.params.state);
-    return res.status(200).json({ 'state': `${state.state}`, 'population': `${state.population}`});
+    return res.status(200).json({ 'state': `${state.state}`, 'population': `${state.population.toLocaleString()}`});
 }
 
 const getStateAdmissionDate = async (req, res) => {
@@ -84,7 +86,7 @@ const createFunFact = async (req, res) => {
     try {
         await State.updateOne(
             { stateCode: req.params.state },
-            { $addToSet: { funFacts: req.body.funfacts } }
+            { $push: { funFacts: req.body.funfacts } }
         );
         const state = await State.findOne({ stateCode: req.params.state }).exec();
         return res.status(201).json(state);
