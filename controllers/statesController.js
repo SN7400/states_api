@@ -25,7 +25,7 @@ const getAllStates = async (req, res) => {
 
     for (let state of states) {
         const stateFromDb = statesFromDb.find((element) => element.stateCode === state.code);
-        state.funFacts = stateFromDb['funFacts'];
+        state.funfacts = stateFromDb['funFacts'];
     }
     return res.status(200).json(states);
 }
@@ -136,7 +136,7 @@ const deleteFunFact = async (req, res) => {
         return res.status(404).json({ 'message': `No Fun Facts found for ${state['state']}`});
     }
     if (!stateObject.funFacts[trueIndex]) {
-        return res.status(404).json({ 'message': `No Fun Facts found at that index for ${state['state']}`});
+        return res.status(404).json({ 'message': `No Fun Fact found at that index for ${state['state']}`});
     }
 
     try {
