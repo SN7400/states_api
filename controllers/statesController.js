@@ -7,7 +7,7 @@ const getAllStates = async (req, res) => {
     const nonContigStates = ['AK', 'HI'];
     const contigStates =
     ['AL', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA',
-    'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', , 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND',
+    'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND',
     'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
     let tempStates;
     let states;
@@ -25,7 +25,7 @@ const getAllStates = async (req, res) => {
 
     for (let state of states) {
         const stateFromDb = statesFromDb.find((element) => element.stateCode === state.code);
-        state.funfacts = stateFromDb['funFacts'];
+        state.funfacts = stateFromDb['funfacts'];
     }
     return res.status(200).json(states);
 }
@@ -34,8 +34,8 @@ const getState = async (req, res) => {
     const data = await fsPromises.readFile('./model/statesData.json', { encoding: 'utf8' });
     const state = JSON.parse(data).find((element) => element.code === req.params.state);
     const stateFromDb = await State.findOne({ stateCode: req.params.state }).exec();
-    if (stateFromDb['funFacts'].length > 0) {
-        state.funfacts = stateFromDb['funFacts'];
+    if (stateFromDb['funfacts'].length > 0) {
+        state.funfacts = stateFromDb['funfacts'];
     }
     return res.status(200).json(state);
 }
@@ -44,7 +44,7 @@ const getFunFact = async (req, res) => {
     const data = await fsPromises.readFile('./model/statesData.json', { encoding: 'utf8' });
     const state = JSON.parse(data).find((element) => element.code === req.params.state);
     const stateFromDb = await State.findOne({ stateCode: req.params.state }).exec();
-    const stateFunFacts = stateFromDb['funFacts'];
+    const stateFunFacts = stateFromDb['funfacts'];
     if (stateFunFacts.length === 0) return res.status(404).json({ 'message': `No Fun Facts found for ${state['state']}` });
     const randomIndex = Math.floor(Math.random() * stateFunFacts.length);
     return res.status(200).json({ 'funfact': `${stateFunFacts[randomIndex]}` });
@@ -74,6 +74,16 @@ const getStateAdmissionDate = async (req, res) => {
     return res.status(200).json({ 'state': `${state.state}`, 'admitted': `${state.admission_date}`});
 }
 
+const createStates = async (req, res) => {
+    for (let state of req.body.states) {
+        let stateFromDb = await State.findOne({ stateCode: state }).exec();
+        if (!stateFromDb) {
+            await State.create({ stateCode: state });
+        }
+    }
+    return res.status(201).json({ 'message': 'States have been created' });
+}
+
 const createFunFact = async (req, res) => {
     if (!req?.body?.funfacts) {
         return res.status(400).json({ 'message': 'State fun facts value required' });
@@ -86,7 +96,7 @@ const createFunFact = async (req, res) => {
     try {
         await State.updateOne(
             { stateCode: req.params.state },
-            { $push: { funFacts: req.body.funfacts } }
+            { $push: { funfacts: req.body.funfacts } }
         );
         const state = await State.findOne({ stateCode: req.params.state }).exec();
         return res.status(201).json(state);
@@ -106,16 +116,16 @@ const updateFunFact = async (req, res) => {
     const state = JSON.parse(data).find((element) => element.code === req.params.state);
     const trueIndex = req.body.index - 1;
     const stateObject = await State.findOne({ stateCode: req.params.state });
-    if (stateObject.funFacts.length === 0) {
+    if (stateObject.funfacts.length === 0) {
         return res.status(404).json({ 'message': `No Fun Facts found for ${state['state']}`});
     }
-    if (!stateObject.funFacts[trueIndex]) {
+    if (!stateObject.funfacts[trueIndex]) {
         return res.status(404).json({ 'message': `No Fun Fact found at that index for ${state['state']}`});
     }
     try {
         await State.updateOne(
             { stateCode: req.params.state },
-            { $set: { [`funFacts.${trueIndex}`]: req.body.funfact } }
+            { $set: { [`funfacts.${trueIndex}`]: req.body.funfact } }
         );
         const state = await State.findOne({ stateCode: req.params.state }).exec();
         return res.status(201).json(state);
@@ -132,17 +142,17 @@ const deleteFunFact = async (req, res) => {
     const state = JSON.parse(data).find((element) => element.code === req.params.state);
     const trueIndex = req.body.index - 1;
     const stateObject = await State.findOne({ stateCode: req.params.state });
-    if (stateObject.funFacts.length === 0) {
+    if (stateObject.funfacts.length === 0) {
         return res.status(404).json({ 'message': `No Fun Facts found for ${state['state']}`});
     }
-    if (!stateObject.funFacts[trueIndex]) {
+    if (!stateObject.funfacts[trueIndex]) {
         return res.status(404).json({ 'message': `No Fun Fact found at that index for ${state['state']}`});
     }
 
     try {
         await State.updateOne(
             { stateCode: req.params.state },
-            { $pull: { "funFacts": stateObject.funFacts[trueIndex] } }
+            { $pull: { "funfacts": stateObject.funfacts[trueIndex] } }
         );
         const state = await State.findOne({ stateCode: req.params.state }).exec();
         return res.status(201).json(state);
@@ -158,6 +168,7 @@ module.exports = {
     getStateNickname,
     getStatePopulation,
     getStateAdmissionDate,
+    createStates,
     createFunFact,
     updateFunFact,
     deleteFunFact,
